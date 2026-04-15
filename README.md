@@ -1,2 +1,3 @@
 # Testes
-This repository is to be used to teste codex
+
+Scaffolded project is available in `BudgetBuddy/`.
