@@ -1,26 +1,66 @@
-@model IReadOnlyList<Book>
+@model BookManager.ViewModels.BooksIndexViewModel
 @{
     ViewData["Title"] = "Biblioteca";
-    var q = ViewBag.Query as string;
 }
 
 <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
     <h1 class="h3 m-0">A tua biblioteca</h1>
-
-    <form method="get" class="d-flex gap-2">
-        <input type="search" name="q" value="@q" class="form-control" placeholder="Pesquisar por título, autor, tipo" />
-        <button class="btn btn-outline-primary" type="submit">Pesquisar</button>
-    </form>
 </div>
 
-@if (!Model.Any())
+<form method="get" class="card card-body mb-4 shadow-sm">
+    <div class="row g-2 align-items-end">
+        <div class="col-12 col-lg-4">
+            <label for="search" class="form-label">Pesquisar (nome, título, tipo, added date)</label>
+            <input id="search" type="search" name="search" value="@Model.Search" class="form-control" placeholder="Ex: Eça, Romance, 2026-04-15" />
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <label for="genre" class="form-label">Filtrar por tipo</label>
+            <select id="genre" name="genre" class="form-select">
+                <option value="">Todos os tipos</option>
+                @foreach (var genre in Model.AvailableGenres)
+                {
+                    if (string.Equals(Model.GenreFilter, genre, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <option value="@genre" selected>@genre</option>
+                    }
+                    else
+                    {
+                        <option value="@genre">@genre</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <label for="sort" class="form-label">Ordenação</label>
+            <select id="sort" name="sort" class="form-select">
+                <option value="title_az" @(Model.Sort == "title_az" ? "selected" : null)>Título A-Z (default)</option>
+                <option value="title_za" @(Model.Sort == "title_za" ? "selected" : null)>Título Z-A</option>
+                <option value="author_az" @(Model.Sort == "author_az" ? "selected" : null)>Nome A-Z</option>
+                <option value="author_za" @(Model.Sort == "author_za" ? "selected" : null)>Nome Z-A</option>
+                <option value="genre_az" @(Model.Sort == "genre_az" ? "selected" : null)>Tipo A-Z</option>
+                <option value="genre_za" @(Model.Sort == "genre_za" ? "selected" : null)>Tipo Z-A</option>
+                <option value="date_new_old" @(Model.Sort == "date_new_old" ? "selected" : null)>Added date: recente → antigo</option>
+                <option value="date_old_new" @(Model.Sort == "date_old_new" ? "selected" : null)>Added date: antigo → recente</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-lg-2 d-flex gap-2">
+            <button class="btn btn-primary w-100" type="submit">Aplicar</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Limpar</a>
+        </div>
+    </div>
+</form>
+
+@if (!Model.Books.Any())
 {
-    <div class="alert alert-info">Ainda não existem livros. Clica em <strong>Novo livro</strong> para começar.</div>
+    <div class="alert alert-info">Não existem livros com esses filtros. Ajusta a pesquisa ou adiciona um novo livro.</div>
 }
 else
 {
     <div class="row g-3">
-        @foreach (var book in Model)
+        @foreach (var book in Model.Books)
         {
             <div class="col-12 col-md-6 col-xl-4">
                 <div class="card h-100 shadow-sm">
@@ -37,8 +77,9 @@ else
                             }
                         </div>
 
-                        <p class="mb-1"><strong>Autor:</strong> @book.Author</p>
-                        <p class="mb-3"><strong>Tipo:</strong> @book.Genre</p>
+                        <p class="mb-1"><strong>Nome/Autor:</strong> @book.Author</p>
+                        <p class="mb-1"><strong>Tipo:</strong> @book.GenresCsv</p>
+                        <p class="mb-3"><strong>Added date:</strong> @book.CreatedAt.ToString("dd/MM/yyyy")</p>
 
                         <div class="mt-auto d-flex flex-wrap gap-2">
                             <form asp-action="ToggleOwned" method="post" class="d-inline">

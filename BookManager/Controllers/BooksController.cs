@@ -1,5 +1,6 @@
 using BookManager.Data;
 using BookManager.Models;
+using BookManager.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,42 +8,79 @@ namespace BookManager.Controllers;
 
 public class BooksController(AppDbContext db) : Controller
 {
-    public async Task<IActionResult> Index(string? q)
+    public async Task<IActionResult> Index(string? search, string? genre, string? sort = "title_az")
     {
         var query = db.Books.AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(q))
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            var term = q.Trim().ToLower();
+            var term = search.Trim().ToLower();
             query = query.Where(b =>
                 b.Title.ToLower().Contains(term) ||
                 b.Author.ToLower().Contains(term) ||
-                b.Genre.ToLower().Contains(term));
+                b.GenresCsv.ToLower().Contains(term) ||
+                b.CreatedAt.ToString("yyyy-MM-dd").Contains(term) ||
+                b.CreatedAt.ToString("dd/MM/yyyy").Contains(term));
         }
 
-        var books = await query
-            .OrderByDescending(b => b.CreatedAt)
-            .ToListAsync();
+        if (!string.IsNullOrWhiteSpace(genre))
+        {
+            var genreTerm = genre.Trim().ToLower();
+            query = query.Where(b => b.GenresCsv.ToLower().Contains(genreTerm));
+        }
 
-        ViewBag.Query = q;
-        return View(books);
+        query = sort switch
+        {
+            "title_za" => query.OrderByDescending(b => b.Title),
+            "author_az" => query.OrderBy(b => b.Author),
+            "author_za" => query.OrderByDescending(b => b.Author),
+            "genre_az" => query.OrderBy(b => b.GenresCsv),
+            "genre_za" => query.OrderByDescending(b => b.GenresCsv),
+            "date_new_old" => query.OrderByDescending(b => b.CreatedAt),
+            "date_old_new" => query.OrderBy(b => b.CreatedAt),
+            _ => query.OrderBy(b => b.Title)
+        };
+
+        var vm = new BooksIndexViewModel
+        {
+            Books = await query.ToListAsync(),
+            Search = search,
+            GenreFilter = genre,
+            Sort = sort ?? "title_az"
+        };
+
+        return View(vm);
     }
 
     public IActionResult Create()
     {
-        return View(new Book { IsOwned = true });
+        return View(new BookFormViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Book book)
+    public async Task<IActionResult> Create(BookFormViewModel vm)
     {
-        if (!ModelState.IsValid)
+        if (!vm.SelectedGenres.Any())
         {
-            return View(book);
+            vm.ErrorMessage = "Seleciona pelo menos um tipo de livro.";
         }
 
-        book.CreatedAt = DateTime.UtcNow;
+        if (!ModelState.IsValid || !vm.SelectedGenres.Any())
+        {
+            vm.AvailableGenres = BookGenres.All;
+            return View(vm);
+        }
+
+        var book = new Book
+        {
+            Title = vm.Title,
+            Author = vm.Author,
+            GenresCsv = BookGenres.Normalize(vm.SelectedGenres),
+            IsOwned = vm.IsOwned,
+            CreatedAt = DateTime.UtcNow
+        };
+
         db.Books.Add(book);
         await db.SaveChangesAsync();
 
@@ -58,21 +96,36 @@ public class BooksController(AppDbContext db) : Controller
             return NotFound();
         }
 
-        return View(book);
+        var vm = new BookFormViewModel
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+            IsOwned = book.IsOwned,
+            SelectedGenres = BookGenres.Parse(book.GenresCsv).ToList()
+        };
+
+        return View(vm);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Book book)
+    public async Task<IActionResult> Edit(int id, BookFormViewModel vm)
     {
-        if (id != book.Id)
+        if (vm.Id != id)
         {
             return BadRequest();
         }
 
-        if (!ModelState.IsValid)
+        if (!vm.SelectedGenres.Any())
         {
-            return View(book);
+            vm.ErrorMessage = "Seleciona pelo menos um tipo de livro.";
+        }
+
+        if (!ModelState.IsValid || !vm.SelectedGenres.Any())
+        {
+            vm.AvailableGenres = BookGenres.All;
+            return View(vm);
         }
 
         var existing = await db.Books.FindAsync(id);
@@ -81,10 +134,10 @@ public class BooksController(AppDbContext db) : Controller
             return NotFound();
         }
 
-        existing.Title = book.Title;
-        existing.Author = book.Author;
-        existing.Genre = book.Genre;
-        existing.IsOwned = book.IsOwned;
+        existing.Title = vm.Title;
+        existing.Author = vm.Author;
+        existing.GenresCsv = BookGenres.Normalize(vm.SelectedGenres);
+        existing.IsOwned = vm.IsOwned;
 
         await db.SaveChangesAsync();
 
