@@ -1,6 +1,8 @@
 # BudgetBuddy
 
-BudgetBuddy is a Next.js (App Router) + TypeScript budgeting app scaffold with Prisma/PostgreSQL, NextAuth, Zod validation, Vitest, Playwright, ESLint, and Prettier.
+App de controlo financeiro pessoal em **Next.js + Prisma + PostgreSQL**.
+
+> Nota: este setup foi simplificado para **uso pessoal/local**.
 
 ## Stack
 - Next.js App Router + TypeScript
@@ -11,28 +13,40 @@ BudgetBuddy is a Next.js (App Router) + TypeScript budgeting app scaffold with P
 - Vitest + Playwright
 - ESLint + Prettier
 
-## Environment variables
-Create `.env` in `BudgetBuddy/` with:
+## 1) Pré-requisitos
+- Node.js 20+
+- npm 10+
+- Docker (recomendado para subir Postgres local)
+
+## 2) Configurar variáveis de ambiente
+Na pasta `BudgetBuddy/`:
 
 ```bash
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/budgetbuddy"
-NEXTAUTH_SECRET="replace-with-a-long-random-secret"
-NEXTAUTH_URL="http://localhost:3000"
+cp .env.example .env
 ```
 
-## Local setup
+Depois, altera o `NEXTAUTH_SECRET` no ficheiro `.env`.
 
+## 3) Subir PostgreSQL local
 ```bash
-cd BudgetBuddy
+docker compose up -d
+```
+
+## 4) Instalar dependências
+```bash
 npm install
+```
+
+## 5) Migrar, popular e arrancar a app
+```bash
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-Open http://localhost:3000.
+Abre: http://localhost:3000
 
-## Available scripts
+## Scripts
 - `npm run dev`
 - `npm run build`
 - `npm run start`
@@ -43,7 +57,25 @@ Open http://localhost:3000.
 - `npm run db:migrate`
 - `npm run db:seed`
 
-## Seed account
-After seeding:
+## Conta de seed
+Após `npm run db:seed`:
 - Email: `demo@budgetbuddy.dev`
 - Password: `Password123!`
+
+## Troubleshooting rápido (uso pessoal)
+Se `npm install` falhar:
+1. Confirma internet ativa.
+2. Confirma registry npm:
+   ```bash
+   npm config get registry
+   ```
+   Deve ser: `https://registry.npmjs.org/`
+3. Limpa proxy do npm (se não usas proxy):
+   ```bash
+   npm config delete proxy
+   npm config delete https-proxy
+   ```
+4. Tenta novamente:
+   ```bash
+   npm install
+   ```
