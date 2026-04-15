@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { TopNav } from "@/components/top-nav";
+import { apiUrl } from "@/lib/api-base";
 
 type Category = { id: string; name: string };
 type Transaction = {
@@ -22,7 +23,7 @@ export default function TransactionsPage() {
   const load = async () => {
     setLoading(true);
     try {
-      const [txRes, catRes] = await Promise.all([fetch("/api/transactions"), fetch("/api/categories")]);
+      const [txRes, catRes] = await Promise.all([fetch(apiUrl("/transactions")), fetch(apiUrl("/categories"))]);
       const txBody = await txRes.json();
       const catBody = await catRes.json();
       setItems(txBody.data ?? []);
@@ -50,7 +51,7 @@ export default function TransactionsPage() {
       categoryId: String(form.get("categoryId")),
     };
 
-    const res = await fetch("/api/transactions", {
+    const res = await fetch(apiUrl("/transactions"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

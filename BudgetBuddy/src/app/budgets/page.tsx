@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { TopNav } from "@/components/top-nav";
+import { apiUrl } from "@/lib/api-base";
 
 type Budget = {
   id: string;
@@ -24,8 +25,8 @@ export default function BudgetsPage() {
     setLoading(true);
     try {
       const [budgetRes, categoryRes] = await Promise.all([
-        fetch(`/api/budgets?month=${encodeURIComponent(month)}`),
-        fetch("/api/categories"),
+        fetch(`${apiUrl("/budgets")}?month=${encodeURIComponent(month)}`),
+        fetch(apiUrl("/categories")),
       ]);
       const budgetBody = await budgetRes.json();
       const categoryBody = await categoryRes.json();
@@ -52,7 +53,7 @@ export default function BudgetsPage() {
       month,
     };
 
-    const res = await fetch("/api/budgets", {
+    const res = await fetch(apiUrl("/budgets"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

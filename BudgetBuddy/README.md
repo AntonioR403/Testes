@@ -2,7 +2,9 @@
 
 App de controlo financeiro pessoal em **Next.js + Prisma + PostgreSQL**.
 
-> Nota: este setup foi simplificado para **uso pessoal/local**.
+Este projeto agora suporta **2 modos de backend**:
+1. **Backend Next.js (atual no repositório)**
+2. **Backend ASP.NET API (modo recomendado para ti)**
 
 ## Stack
 - Next.js App Router + TypeScript
@@ -13,12 +15,12 @@ App de controlo financeiro pessoal em **Next.js + Prisma + PostgreSQL**.
 - Vitest + Playwright
 - ESLint + Prettier
 
-## 1) Pré-requisitos
+## Pré-requisitos
 - Node.js 20+
 - npm 10+
 - Docker (recomendado para subir Postgres local)
 
-## 2) Configurar variáveis de ambiente
+## Configurar variáveis de ambiente
 Na pasta `BudgetBuddy/`:
 
 ```bash
@@ -27,24 +29,59 @@ cp .env.example .env
 
 Depois, altera o `NEXTAUTH_SECRET` no ficheiro `.env`.
 
-## 3) Subir PostgreSQL local
+## Subir PostgreSQL local
 ```bash
 docker compose up -d
 ```
 
-## 4) Instalar dependências
-```bash
-npm install
+---
+
+## Modo 1 — Backend Next.js (default)
+Mantém no `.env`:
+
+```env
+NEXT_PUBLIC_USE_DOTNET_BACKEND="false"
 ```
 
-## 5) Migrar, popular e arrancar a app
+E arranca:
+
 ```bash
+npm install
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
 Abre: http://localhost:3000
+
+---
+
+## Modo 2 — Backend ASP.NET API (segunda maneira)
+Se vais usar backend em C#, configura no `.env`:
+
+```env
+NEXT_PUBLIC_USE_DOTNET_BACKEND="true"
+ASPNET_API_BASE_URL="http://localhost:5099/api"
+```
+
+Neste modo, o frontend chama `/api-proxy/*` no Next.js e o proxy encaminha para o teu ASP.NET API.
+
+### Endpoints esperados no backend C#
+- `POST /api/signup`
+- `POST /api/login`
+- `POST /api/logout`
+- `GET /api/me`
+- `GET/POST /api/categories`
+- `PATCH/DELETE /api/categories/{id}`
+- `GET/POST /api/transactions`
+- `PATCH/DELETE /api/transactions/{id}`
+- `GET/POST /api/budgets`
+- `PATCH/DELETE /api/budgets/{id}`
+- `GET /api/dashboard?month=...`
+
+> Dica: mantém os mesmos formatos JSON do frontend atual (`{ data: ... }` e `{ error: ... }`).
+
+---
 
 ## Scripts
 - `npm run dev`
@@ -57,12 +94,12 @@ Abre: http://localhost:3000
 - `npm run db:migrate`
 - `npm run db:seed`
 
-## Conta de seed
+## Conta de seed (modo Next.js backend)
 Após `npm run db:seed`:
 - Email: `demo@budgetbuddy.dev`
 - Password: `Password123!`
 
-## Troubleshooting rápido (uso pessoal)
+## Troubleshooting rápido
 Se `npm install` falhar:
 1. Confirma internet ativa.
 2. Confirma registry npm:

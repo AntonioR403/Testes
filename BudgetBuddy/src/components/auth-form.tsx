@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "@/lib/api-base";
 
 type Props = { mode: "login" | "signup" };
 
@@ -21,7 +22,7 @@ export function AuthForm({ mode }: Props) {
       password: String(form.get("password") ?? ""),
     };
 
-    const endpoint = mode === "signup" ? "/api/signup" : "/api/login";
+    const endpoint = mode === "signup" ? apiUrl("/signup") : apiUrl("/login");
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

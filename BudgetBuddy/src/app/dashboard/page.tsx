@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { TopNav } from "@/components/top-nav";
+import { apiUrl } from "@/lib/api-base";
 
 function badgeForUsage(usage: number) {
   if (usage >= 100) return "bg-red-100 text-red-700";
@@ -22,7 +23,7 @@ export default function DashboardPage() {
 }
 
 async function getData(month: string) {
-  const response = await fetch(`/api/dashboard?month=${encodeURIComponent(month)}`);
+  const response = await fetch(`${apiUrl("/dashboard")}?month=${encodeURIComponent(month)}`);
   if (!response.ok) throw new Error("Failed to load dashboard");
   return response.json();
 }
