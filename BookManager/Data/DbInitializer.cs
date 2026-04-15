@@ -16,17 +16,17 @@ public static class DbInitializer
             {
                 Title = "Dom Quixote",
                 Author = "Miguel de Cervantes",
-                Genre = "Romance",
+                GenresCsv = BookGenres.Normalize(["Clássico", "Romance", "Comédia"]),
                 IsOwned = true,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow.AddDays(-3)
             },
             new Book
             {
                 Title = "Os Maias",
                 Author = "Eça de Queirós",
-                Genre = "Clássico",
+                GenresCsv = BookGenres.Normalize(["Clássico", "Drama", "Romance"]),
                 IsOwned = false,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow.AddDays(-1)
             }
         );
 

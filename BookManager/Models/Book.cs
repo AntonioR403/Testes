@@ -10,13 +10,13 @@ public class Book
     [StringLength(150)]
     public string Title { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "O autor é obrigatório")]
+    [Required(ErrorMessage = "O autor/nome é obrigatório")]
     [StringLength(120)]
     public string Author { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "O tipo/género é obrigatório")]
-    [StringLength(80)]
-    public string Genre { get; set; } = string.Empty;
+    [Required(ErrorMessage = "É obrigatório selecionar pelo menos um tipo")]
+    [StringLength(600)]
+    public string GenresCsv { get; set; } = string.Empty;
 
     [Display(Name = "Já tenho este livro")]
     public bool IsOwned { get; set; }

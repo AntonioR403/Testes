@@ -1,4 +1,4 @@
-@model Book
+@model BookManager.ViewModels.BookFormViewModel
 
 <div class="mb-3">
     <label asp-for="Title" class="form-label"></label>
@@ -13,9 +13,21 @@
 </div>
 
 <div class="mb-3">
-    <label asp-for="Genre" class="form-label">Tipo / Género</label>
-    <input asp-for="Genre" class="form-control" placeholder="Ex: Romance, Comédia, Fantasia" />
-    <span asp-validation-for="Genre" class="text-danger"></span>
+    <label class="form-label fw-semibold">Tipos de livro</label>
+    <div class="genre-grid border rounded p-3 bg-light-subtle">
+        @foreach (var genre in Model.AvailableGenres)
+        {
+            var isChecked = Model.SelectedGenres.Contains(genre);
+            <div class="form-check mb-1">
+                <input class="form-check-input" type="checkbox" name="SelectedGenres" value="@genre" id="genre_@genre.GetHashCode()" @(isChecked ? "checked" : null) />
+                <label class="form-check-label" for="genre_@genre.GetHashCode()">@genre</label>
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="text-danger mt-2">@Model.ErrorMessage</div>
+    }
 </div>
 
 <div class="form-check mb-4">
