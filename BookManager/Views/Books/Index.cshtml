@@ -1,0 +1,59 @@
+@model IReadOnlyList<Book>
+@{
+    ViewData["Title"] = "Biblioteca";
+    var q = ViewBag.Query as string;
+}
+
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+    <h1 class="h3 m-0">A tua biblioteca</h1>
+
+    <form method="get" class="d-flex gap-2">
+        <input type="search" name="q" value="@q" class="form-control" placeholder="Pesquisar por título, autor, tipo" />
+        <button class="btn btn-outline-primary" type="submit">Pesquisar</button>
+    </form>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Ainda não existem livros. Clica em <strong>Novo livro</strong> para começar.</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var book in Model)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
+                            <h2 class="h5 m-0">@book.Title</h2>
+                            @if (book.IsOwned)
+                            {
+                                <span class="badge text-bg-success">Tenho</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Não tenho</span>
+                            }
+                        </div>
+
+                        <p class="mb-1"><strong>Autor:</strong> @book.Author</p>
+                        <p class="mb-3"><strong>Tipo:</strong> @book.Genre</p>
+
+                        <div class="mt-auto d-flex flex-wrap gap-2">
+                            <form asp-action="ToggleOwned" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@book.Id" />
+                                <button class="btn btn-sm btn-outline-success" type="submit">Alternar estado</button>
+                            </form>
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@book.Id">Editar</a>
+                            <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Tens a certeza que queres remover este livro?');">
+                                <input type="hidden" name="id" value="@book.Id" />
+                                <button class="btn btn-sm btn-outline-danger" type="submit">Remover</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

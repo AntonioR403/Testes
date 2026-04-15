@@ -1,0 +1,24 @@
+@model Book
+
+<div class="mb-3">
+    <label asp-for="Title" class="form-label"></label>
+    <input asp-for="Title" class="form-control" placeholder="Ex: O Nome da Rosa" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Author" class="form-label"></label>
+    <input asp-for="Author" class="form-control" placeholder="Ex: Umberto Eco" />
+    <span asp-validation-for="Author" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Genre" class="form-label">Tipo / Género</label>
+    <input asp-for="Genre" class="form-control" placeholder="Ex: Romance, Comédia, Fantasia" />
+    <span asp-validation-for="Genre" class="text-danger"></span>
+</div>
+
+<div class="form-check mb-4">
+    <input asp-for="IsOwned" class="form-check-input" />
+    <label asp-for="IsOwned" class="form-check-label"></label>
+</div>
