@@ -1,0 +1,26 @@
+body {
+  background-color: #f8fafc;
+}
+
+.card {
+  border-radius: 0.9rem;
+}
+
+.form-control,
+.btn,
+.card,
+.form-select {
+  box-shadow: none !important;
+}
+
+.genre-grid {
+  max-height: 280px;
+  overflow-y: auto;
+  columns: 2;
+}
+
+@media (max-width: 768px) {
+  .genre-grid {
+    columns: 1;
+  }
+}

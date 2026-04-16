@@ -1,0 +1,36 @@
+@model BookManager.ViewModels.BookFormViewModel
+
+<div class="mb-3">
+    <label asp-for="Title" class="form-label"></label>
+    <input asp-for="Title" class="form-control" placeholder="Ex: O Nome da Rosa" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Author" class="form-label"></label>
+    <input asp-for="Author" class="form-control" placeholder="Ex: Umberto Eco" />
+    <span asp-validation-for="Author" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label class="form-label fw-semibold">Tipos de livro</label>
+    <div class="genre-grid border rounded p-3 bg-light-subtle">
+        @foreach (var genre in Model.AvailableGenres)
+        {
+            var isChecked = Model.SelectedGenres.Contains(genre);
+            <div class="form-check mb-1">
+                <input class="form-check-input" type="checkbox" name="SelectedGenres" value="@genre" id="genre_@genre.GetHashCode()" @(isChecked ? "checked" : null) />
+                <label class="form-check-label" for="genre_@genre.GetHashCode()">@genre</label>
+            </div>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="text-danger mt-2">@Model.ErrorMessage</div>
+    }
+</div>
+
+<div class="form-check mb-4">
+    <input asp-for="IsOwned" class="form-check-input" />
+    <label asp-for="IsOwned" class="form-check-label"></label>
+</div>
