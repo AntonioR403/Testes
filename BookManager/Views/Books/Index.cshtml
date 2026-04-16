@@ -34,15 +34,15 @@
 
         <div class="col-12 col-lg-3">
             <label for="sort" class="form-label">Ordenação</label>
-            <select id="sort" name="sort" class="form-select">
-                <option value="title_az" @(Model.Sort == "title_az" ? "selected" : null)>Título A-Z (default)</option>
-                <option value="title_za" @(Model.Sort == "title_za" ? "selected" : null)>Título Z-A</option>
-                <option value="author_az" @(Model.Sort == "author_az" ? "selected" : null)>Nome A-Z</option>
-                <option value="author_za" @(Model.Sort == "author_za" ? "selected" : null)>Nome Z-A</option>
-                <option value="genre_az" @(Model.Sort == "genre_az" ? "selected" : null)>Tipo A-Z</option>
-                <option value="genre_za" @(Model.Sort == "genre_za" ? "selected" : null)>Tipo Z-A</option>
-                <option value="date_new_old" @(Model.Sort == "date_new_old" ? "selected" : null)>Added date: recente → antigo</option>
-                <option value="date_old_new" @(Model.Sort == "date_old_new" ? "selected" : null)>Added date: antigo → recente</option>
+            <select asp-for="Sort" class="form-select">
+                <option value="title_az">Título A-Z (default)</option>
+                <option value="title_za">Título Z-A</option>
+                <option value="author_az">Nome A-Z</option>
+                <option value="author_za">Nome Z-A</option>
+                <option value="genre_az">Tipo A-Z</option>
+                <option value="genre_za">Tipo Z-A</option>
+                <option value="date_new_old">Added date: recente → antigo</option>
+                <option value="date_old_new">Added date: antigo → recente</option>
             </select>
         </div>
 
